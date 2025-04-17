@@ -4,12 +4,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.Timer;
 import java.util.Vector;
+import java.sql.*;
 
 public class tela extends WindowAdapter implements ActionListener{
     private Frame janela;
     private Panel painelTimer,painelBotoes;
     private Label lcronometro, ltotal;
-    private Button bstart, bparar, bpoint, bfim, brelatorio;
+    private Button bstart, bparar, bpoint, bzerar, brelatorio, bsalvar;
     private TextArea tvoltas;
     private Vector vVoltas;
         
@@ -53,15 +54,18 @@ public class tela extends WindowAdapter implements ActionListener{
         bparar.addActionListener(this);
         bpoint = new Button("POINT");
         bpoint.addActionListener(this);
-        bfim = new Button("FIM");
-        bfim.addActionListener(this);
+        bzerar = new Button("ZERAR");
+        bzerar.addActionListener(this);
+        bsalvar = new Button("SALVAR");
+        bsalvar.addActionListener(this);
         brelatorio = new Button("RELATÓRIO");
         brelatorio.addActionListener(this);
         
         painelBotoes.add(bstart);
         painelBotoes.add(bparar);
         painelBotoes.add(bpoint);
-        painelBotoes.add(bfim);
+        painelBotoes.add(bzerar);
+        painelBotoes.add(bsalvar);
         painelBotoes.add(brelatorio);
 
         
@@ -79,8 +83,10 @@ public class tela extends WindowAdapter implements ActionListener{
             this.botaoParar();
         } else if (b==bpoint) {
             this.botaoPoint();
-        } else if (b==bfim) {
+        } else if (b==bzerar) {
             this.botaoFim();
+        } else if (b==bsalvar) {
+            this.botaoSalvar();
         }
     }
     
@@ -91,7 +97,21 @@ public class tela extends WindowAdapter implements ActionListener{
         }
         tvoltas.setText(formatoAntes);
     }
-    
+    public Connection conecta() {
+        String url = "jdbc:mysql://localhost:3306/cronometro?useTimezone=true&serverTimezone=UTC";
+        Connection con;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // driver atualizado
+            con = DriverManager.getConnection(url, "root", ""); // ajuste a senha se necessário
+            return con;
+        } catch (ClassNotFoundException cnf) {
+            System.out.println("Erro no DRIVER: " + cnf.getMessage());
+            return null;
+        } catch (SQLException sql) {
+            System.out.println("Erro no SQL: " + sql.getMessage());
+            return null;
+        }
+    }
     void botaoStart () {
         c.startar();
         timerSwing = new Timer(1, new ActionListener() {
@@ -118,7 +138,20 @@ public class tela extends WindowAdapter implements ActionListener{
         lcronometro.setText(c.getTimer());
         timerSwing.stop();
     }
-    
+    void botaoSalvar(){
+        Connection con = conecta();
+        try {
+            int resultado;
+            Statement st = con.createStatement();
+            for (int i= 0; i < vVoltas.size(); i++) {
+                resultado = st.executeUpdate("insert into voltas (cod_volta, tempo)values("+(i + 1)+"," + vVoltas.get(i) + ");");
+            }
+            st. close();
+            con.close();
+        } catch (SQLException sql){
+            System.out.println("Não salvo");
+        }
+    }
     public void windowClosing(WindowEvent e) {
         System.exit(0);
     }
@@ -127,3 +160,4 @@ public class tela extends WindowAdapter implements ActionListener{
         tela t = new tela();
     }
 }
+
