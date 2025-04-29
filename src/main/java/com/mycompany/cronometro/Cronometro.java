@@ -1,10 +1,5 @@
 package com.mycompany.cronometro;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.Vector;
-
 public class Cronometro extends Thread {
 
     private boolean rodando = true;
@@ -14,7 +9,6 @@ public class Cronometro extends Thread {
     private int milisRestantes = 0;
     private String timerFormatado;
     private boolean iniciado = false;
-
     public synchronized void startar() 
         {if (!iniciado) {
             this.start();
@@ -61,6 +55,20 @@ public class Cronometro extends Thread {
         seg = 0;
         milisRestantes = 0;
         timerFormatado = "00:00:000";
+    }
+    
+    public int getTimerInt() {
+        return miliseg;
+    }
+    
+    public String formataMiliSegs (int miliRes) {
+        minutos = (miliRes / 60000) % 60; // Cálculo correto dos minutos
+        seg = (miliRes / 1000) % 60;      // Cálculo correto dos segundos
+        milisRestantes = miliRes % 1000; // Milissegundos restantes
+        
+        String timerFormatado = String.format("%02d:%02d:%03d", minutos, seg, milisRestantes);
+        
+        return timerFormatado;
     }
     
     public String getTimer() {
