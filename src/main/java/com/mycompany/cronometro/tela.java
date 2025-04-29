@@ -198,7 +198,6 @@ public class tela extends WindowAdapter implements ActionListener, KeyListener {
     }
     
     void botaoRelatorio() {
-        botaoFim();
         relatorio r  = new relatorio();;
         r.mostrarTela();
     }
@@ -213,7 +212,6 @@ public class tela extends WindowAdapter implements ActionListener, KeyListener {
                 for (int j = 0; j< equipeAtual.getQuantVoltas(); j++) {
                     resultado = st.executeUpdate("insert into voltas (cod_volta, tempo, cod_equipe, tempo_total) values (" + (j + 1) + ", " + equipeAtual.getVoltaParcial(j) + ", "+ equipeAtual.getCodEquipe() + ", " + equipeAtual.getVolta(j) + ");");
                 }
-                System.out.println(equipeAtual.getCodEquipe());
                 st.executeUpdate("update equipes set tempo_total = " + equipeAtual.getTempoTotal() + " where cod_equipe = " + equipeAtual.getCodEquipe());
             }
             st. close();
